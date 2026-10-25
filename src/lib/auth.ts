@@ -10,13 +10,18 @@ export type AdminUser = { id: string; email: string };
  */
 export async function getAdmin(): Promise<AdminUser | null> {
   if (!isSupabaseConfigured) return null;
-  const sb = await sessionClient();
-  const {
-    data: { user },
-  } = await sb.auth.getUser();
-  if (!user) return null;
-  const { data } = await sb.from("admin_users").select("user_id").eq("user_id", user.id).maybeSingle();
-  return data ? { id: user.id, email: user.email ?? "" } : null;
+  try {
+    const sb = await sessionClient();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
+    if (!user) return null;
+    const { data } = await sb.from("admin_users").select("user_id").eq("user_id", user.id).maybeSingle();
+    return data ? { id: user.id, email: user.email ?? "" } : null;
+  } catch (e) {
+    console.error("[auth] Supabase no respondió:", e);
+    return null;
+  }
 }
 
 export class AuthError extends Error {}

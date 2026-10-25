@@ -15,16 +15,10 @@ export const CATALOG_TAG = "catalog";
 export async function getPublicCatalog(): Promise<PublicCatalog> {
   "use cache";
   cacheTag(CATALOG_TAG);
-  cacheLife("hours");
 
   if (!isSupabaseConfigured) {
-    return {
-      categories: SEED_CATEGORIES,
-      products: SEED_PRODUCTS,
-      gallery: SEED_GALLERY,
-      reviews: SEED_REVIEWS.filter((r) => r.status === "published"),
-      demo: true,
-    };
+    cacheLife("hours");
+    return demoCatalog();
   }
 
   const db = publicClient();
@@ -35,7 +29,14 @@ export async function getPublicCatalog(): Promise<PublicCatalog> {
     db.from("reviews").select("id,product_id,name,stars,body,status,created_at").eq("status", "published").order("created_at", { ascending: false }),
   ]);
   const err = cats.error || prods.error || gal.error || revs.error;
-  if (err) throw new Error(`Supabase: ${err.message}`);
+  if (err) {
+    // Base inaccesible o sin tablas (¿falta correr supabase/setup.sql?): el sitio sigue
+    // funcionando con los datos demo y se reintenta en pocos minutos.
+    console.error(`[catalog] Supabase no respondió, usando datos demo: ${err.message}`);
+    cacheLife("minutes");
+    return demoCatalog();
+  }
+  cacheLife("hours");
 
   return {
     categories: (cats.data ?? []).map(toCategory),
@@ -43,6 +44,16 @@ export async function getPublicCatalog(): Promise<PublicCatalog> {
     gallery: (gal.data ?? []).map(toGallery),
     reviews: (revs.data ?? []).map(toReview),
     demo: false,
+  };
+}
+
+function demoCatalog(): PublicCatalog {
+  return {
+    categories: SEED_CATEGORIES,
+    products: SEED_PRODUCTS,
+    gallery: SEED_GALLERY,
+    reviews: SEED_REVIEWS.filter((r) => r.status === "published"),
+    demo: true,
   };
 }
 

@@ -1,10 +1,27 @@
 // Datos de negocio y catálogos fijos (ocasiones, estilos, presupuestos).
 // Las categorías NO están aquí: son administrables desde el panel.
 
+/** URL pública del sitio. Acepta valores sin "https://" y usa el dominio de Vercel si no se definió. */
+function resolveSiteUrl(): string {
+  const raw = (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    ""
+  ).trim();
+  if (!raw) return "http://localhost:3000";
+  const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    return new URL(withProtocol).origin;
+  } catch {
+    return "http://localhost:3000";
+  }
+}
+
 export const SITE = {
   name: "Petite Moments GT",
   shortName: "Petite Moments",
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
+  url: resolveSiteUrl(),
   description:
     "Decoración con globos, sorpresas personalizadas, repostería, fotografía e inflables para celebrar momentos especiales en Ciudad de Guatemala.",
   whatsapp: "50242278353",

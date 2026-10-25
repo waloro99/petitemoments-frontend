@@ -87,8 +87,13 @@ export async function submitLead(raw: QuoteFormData & { website?: string }): Pro
 
   if (!isSupabaseConfigured) return { ok: true, stored: false }; // modo demo
 
+  // Si la base no está lista, NO bloqueamos al cliente: sigue a WhatsApp con el mensaje armado.
   const db = serviceClient();
-  if (!db) return { ok: false, error: "El servidor no tiene configurada la clave secreta de Supabase." };
+  if (!db) {
+    console.error("[lead] Falta SUPABASE_SECRET_KEY: la solicitud no se guardó.");
+    await notifyByEmail(f).catch((e) => console.error("[lead] correo no enviado:", e));
+    return { ok: true, stored: false };
+  }
 
   const ipHash = await visitorHash();
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -113,10 +118,10 @@ export async function submitLead(raw: QuoteFormData & { website?: string }): Pro
     product_slug: f.producto || null,
     ip_hash: ipHash,
   });
-  if (error) return { ok: false, error: "No pudimos guardar tu solicitud. Escríbenos por WhatsApp." };
+  if (error) console.error("[lead] No se guardó en Supabase:", error.message);
 
   await notifyByEmail(f).catch((e) => console.error("[lead] correo no enviado:", e));
-  return { ok: true, stored: true };
+  return { ok: true, stored: !error };
 }
 
 /** Aviso al negocio vía Resend (opcional: si no hay API key, se omite). */

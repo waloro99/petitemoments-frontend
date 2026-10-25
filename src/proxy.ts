@@ -1,18 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { isSupabaseConfigured, SUPABASE_PUBLIC_KEY, SUPABASE_URL } from "@/lib/supabase/env";
 
 /**
  * Protege /admin: refresca la sesión de Supabase y redirige a /admin/login si no hay usuario.
  * La verificación de que el usuario es administrador ocurre además en el servidor (página y acciones).
  */
 export async function proxy(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   // Modo demo (sin Supabase): el panel se muestra en solo lectura con datos semilla.
-  if (!url || !key) return NextResponse.next();
+  if (!isSupabaseConfigured) return NextResponse.next();
 
   let response = NextResponse.next({ request });
-  const supabase = createServerClient(url, key, {
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY, {
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (list) => {
@@ -23,9 +22,14 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    ({
+      data: { user },
+    } = await supabase.auth.getUser());
+  } catch (e) {
+    console.error("[proxy] Supabase Auth no respondió:", e);
+  }
 
   const isLogin = request.nextUrl.pathname.startsWith("/admin/login");
   if (!user && !isLogin) {
