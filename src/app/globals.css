@@ -1,0 +1,248 @@
+@import "tailwindcss";
+
+/* Breakpoints desktop-first del diseño: ≤1000px (tablet) y ≤640px (móvil).
+   Se declaran en este orden para que `mob:` gane sobre `tab:`. */
+@custom-variant tab (@media (max-width: 1000px));
+@custom-variant mob (@media (max-width: 640px));
+
+@theme {
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-mulish), "Mulish", system-ui, sans-serif;
+
+  /* Superficies */
+  --color-ivory: #faf5ef;
+  --color-surface: #ffffff;
+  --color-warm: #f6ece3;
+  --color-warm-hover: #efe0d5;
+  --color-warm2: #f1e4db;
+  --color-tint: #f4e8e2;
+  --color-chip: #fbf3ed;
+  --color-rose-soft: #f7e7e3;
+  --color-sand-soft: #f1e8da;
+
+  /* Acentos */
+  --color-blush: #c0808c;
+  --color-blush-dark: #b0606c;
+  --color-champagne: #b08968;
+  --color-gold: #c99c74;
+  --color-star: #d9a441;
+  --color-star-empty: #e3d2c4;
+
+  /* Texto */
+  --color-ink: #3d3330;
+  --color-ink-2: #5a4a44;
+  --color-ink-3: #7a6c64;
+  --color-ink-4: #8a7d76;
+  --color-ink-5: #a0938b;
+  --color-mocha: #7a5a50;
+
+  /* Bordes */
+  --color-line: #eee2d6;
+  --color-line-input: #e3d2c4;
+  --color-line-warm: #ead8cf;
+  --color-line-dash: #d8c0ac;
+
+  /* WhatsApp */
+  --color-wa: #25d366;
+  --color-wa-dark: #1fb85a;
+
+  /* Footer */
+  --color-footer: #3d2e2b;
+  --color-footer-text: #e6d6cb;
+  --color-footer-muted: #c4b2a6;
+  --color-footer-dim: #a08d82;
+  --color-footer-faint: #907c71;
+  --color-footer-head: #b89e90;
+
+  /* Estados */
+  --color-ok-bg: #e7f5ec;
+  --color-ok-line: #bfe3cc;
+  --color-ok-text: #1f7a44;
+  --color-wait-bg: #fbf0dc;
+  --color-wait-line: #ead7b0;
+  --color-wait-text: #8a6a2e;
+  --color-danger-bg: #f3e1e1;
+  --color-danger-hover: #edd3d3;
+  --color-danger-line: #e6c7c7;
+  --color-danger-text: #b0505c;
+  --color-error: #c0392b;
+
+  /* Sombras */
+  --shadow-card: 0 6px 22px -14px rgba(109, 74, 82, 0.25);
+  --shadow-card-hover: 0 18px 34px -18px rgba(109, 74, 82, 0.32);
+  --shadow-hero: 0 30px 60px -30px rgba(109, 74, 82, 0.4);
+  --shadow-carousel: 0 24px 50px -28px rgba(109, 74, 82, 0.4);
+  --shadow-wa: 0 10px 24px -8px rgba(37, 211, 102, 0.55);
+  --shadow-primary: 0 12px 26px -12px rgba(192, 128, 140, 0.6);
+  --shadow-lightbox: 0 30px 70px -20px rgba(0, 0, 0, 0.6);
+  --shadow-panel: 0 20px 44px -24px rgba(109, 74, 82, 0.3);
+
+  /* Animaciones */
+  --animate-pm-float: pmFloat 3.4s ease-in-out infinite;
+  --animate-pm-rise: pmRise 0.6s ease both;
+  --animate-pm-rise-slow: pmRise 0.7s ease both;
+  --animate-pm-fade: pmFade 0.2s ease;
+  --animate-pm-zoom: pmZoom 0.35s ease;
+
+  @keyframes pmFloat {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  @keyframes pmRise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pmFade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pmZoom {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: #eac9cb;
+    color: #4a2f35;
+  }
+  button,
+  [role="button"],
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+  /* Foco visible en todos los controles */
+  :where(a, button, [role="button"], [role="radio"], summary):focus-visible {
+    outline: 2px solid var(--color-blush);
+    outline-offset: 2px;
+  }
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #e3d2c4;
+    border-radius: 9px;
+    border: 3px solid #faf5ef;
+  }
+}
+
+@layer components {
+  /* Inputs con el foco del diseño */
+  .pm-input {
+    border: 1px solid var(--color-line-input);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14.5px;
+    background: #fff;
+    color: var(--color-ink);
+    width: 100%;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .pm-input:focus {
+    outline: none;
+    border-color: var(--color-blush);
+    box-shadow: 0 0 0 3px rgba(192, 128, 140, 0.18);
+  }
+  .pm-input-sm {
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-size: 14px;
+  }
+  .pm-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-ink-2);
+  }
+  .pm-eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-champagne);
+  }
+  .pm-h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 38px;
+    margin: 0;
+    color: var(--color-ink);
+  }
+  @media (max-width: 640px) {
+    .pm-h2 {
+      font-size: 30px;
+    }
+  }
+  .pm-container {
+    margin-inline: auto;
+    padding-inline: 28px;
+  }
+  @media (max-width: 640px) {
+    .pm-container {
+      padding-inline: 18px;
+    }
+  }
+  /* Velo de luz sobre imágenes */
+  .pm-veil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 68% 28%, rgba(255, 255, 255, 0.32), transparent 55%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
