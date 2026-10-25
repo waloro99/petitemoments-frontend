@@ -16,7 +16,7 @@ Sitio de catálogo y cotización para **Petite Moments GT** (decoración con glo
 | `/galeria` | Masonry de trabajos reales, filtro `?ocasion=`, lightbox con reseñas del producto vinculado |
 | `/cotizar` | Formulario → guarda el lead, avisa por correo y ofrece continuar por WhatsApp. Acepta `?producto=slug` |
 | `/admin` | Panel (protegido): Productos · Categorías · Galería · Reseñas · Cotizaciones |
-| `/admin/login` | Ingreso con correo y contraseña (Supabase Auth) |
+| `/admin/login` | Ingreso con usuario y contraseña |
 | `/sitemap.xml`, `/robots.txt`, `/opengraph-image` | SEO |
 
 ## Reglas de negocio clave
@@ -24,7 +24,7 @@ Sitio de catálogo y cotización para **Petite Moments GT** (decoración con glo
 - **Reseñas:** con 4★ o más se publican al instante; con menos de 4 quedan **pendientes** hasta que se aprueben en el panel. La regla se aplica en el servidor (Server Action) **y** en la base (trigger `reviews_enforce_status`), así que no depende del navegador. El promedio y los conteos usan solo reseñas publicadas. Anti-spam: campo trampa (honeypot) + máximo 3 reseñas por hora por IP (hasheada).
 - **Galería ↔ reseñas:** cada foto puede vincularse a un producto; las reseñas publicadas de ese producto aparecen en el badge y el lightbox de la foto.
 - **Cotizaciones:** se guardan en `leads` (máx. 5 por hora por IP), se envía aviso por correo con Resend (si está configurado) y el cliente continúa por WhatsApp con el mensaje armado.
-- **Seguridad del panel:** Supabase Auth (contraseña hasheada, sesión en cookie httpOnly), `src/proxy.ts` protege `/admin`, y además cada acción del servidor verifica que el usuario esté en `admin_users`. Las políticas RLS impiden escribir a quien no sea admin aunque llame a la API directamente.
+- **Seguridad del panel:** usuario y contraseña propios (hash *scrypt*, nunca en claro en el código), sesión en cookie httpOnly firmada con HMAC y con vencimiento de 7 días. `src/proxy.ts` protege `/admin` y cada Server Action vuelve a verificar la sesión. El panel escribe en la base con la clave secreta solo desde el servidor; el público, por RLS, solo puede leer.
 
 ## Estructura
 
@@ -69,18 +69,25 @@ Sin variables de Supabase el sitio arranca en **modo demo**: muestra los datos d
    - `NEXT_PUBLIC_SUPABASE_URL` (Project URL)
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (publishable / anon)
    - `SUPABASE_SECRET_KEY` (secret / service_role) — solo servidor
-4. **Authentication → Sign In / Providers**: desactiva *Allow new users to sign up* (el panel no necesita registro público).
-5. **Authentication → Users → Add user → Create new user**: correo y contraseña de la dueña, marcando *Auto Confirm User*.
-6. Dale permisos de administradora (SQL Editor):
-   ```sql
-   insert into public.admin_users (user_id, email)
-   select id, email from auth.users where email = 'correo-de-la-duena@ejemplo.com';
-   ```
-7. Reinicia `npm run dev` y entra a `/admin/login`.
+4. Reinicia `npm run dev` (o haz *Redeploy* en Vercel tras agregar las variables) y entra a `/admin/login`.
+
+## 3. Usuario del panel
+
+El panel funciona aunque la base no esté conectada (en modo demo solo se puede recorrer, no guardar).
+
+- Hay un **usuario por defecto** cuya contraseña se entregó por fuera del repositorio (el repo es público: en el código solo está su hash).
+- **Cambiar usuario/contraseña** (recomendado antes de entregar a la clienta):
+  ```bash
+  npm run admin:password -- "UnaContraseñaNuevaYLarga"
+  # imprime ADMIN_PASSWORD_HASH=scrypt$...
+  ```
+  En Vercel → Settings → Environment Variables agrega `ADMIN_USERNAME` (opcional) y `ADMIN_PASSWORD_HASH` con ese valor, y haz *Redeploy*.
+- La sesión se firma con un secreto que se genera en cada build (`scripts/ensure-build-secret.mjs`, fuera del repo). Al redesplegar, hay que volver a ingresar. Para sesiones estables entre deploys, define `ADMIN_SESSION_SECRET` (cadena aleatoria larga).
+- Tablas `admin_users` y políticas de Storage del SQL ya no son necesarias para el panel (queda listo por si luego se quiere Supabase Auth).
 
 > Las **reseñas semilla son de muestra**. Antes de publicar: `delete from public.reviews;` o cárgalas reales con autorización.
 
-## 3. Aviso por correo de cotizaciones (opcional)
+## 4. Aviso por correo de cotizaciones (opcional)
 
 1. Crea cuenta en [resend.com](https://resend.com), verifica el dominio (`petitemomentsgt.com`) y genera una API key.
 2. Define `RESEND_API_KEY`, `RESEND_FROM` (p. ej. `Petite Moments <cotizaciones@petitemomentsgt.com>`) y `LEAD_NOTIFY_EMAIL`.
@@ -88,12 +95,12 @@ Sin variables de Supabase el sitio arranca en **modo demo**: muestra los datos d
 
 Si no configuras Resend, las cotizaciones igual se guardan y se ven en el panel (pestaña **Cotizaciones**).
 
-## 4. Desplegar en Vercel
+## 5. Desplegar en Vercel
 
 1. Sube el repo a GitHub e impórtalo en [vercel.com/new](https://vercel.com/new) (framework: Next.js, sin cambios de build).
 2. En **Settings → Environment Variables** agrega las mismas variables de `.env.local`, con `NEXT_PUBLIC_SITE_URL` = dominio final (afecta canonical, sitemap y datos estructurados).
 3. Deploy. El build lee el catálogo de Supabase para prerenderizar las páginas: **ejecuta `setup.sql` antes del primer deploy**.
-4. Dominio propio: **Settings → Domains**. Luego en Supabase → *Authentication → URL Configuration* pon ese dominio como *Site URL*.
+4. Dominio propio: **Settings → Domains**.
 5. Registra el sitio en Google Search Console y envía `https://tu-dominio/sitemap.xml`.
 
 ## Cómo se actualiza el contenido
@@ -107,6 +114,7 @@ Las páginas públicas se sirven estáticas y cacheadas (tag `catalog`, vida de 
 | `npm run dev` | Desarrollo |
 | `npm run build` / `npm start` | Producción local |
 | `npm run lint` / `npm run typecheck` | Calidad |
+| `npm run admin:password -- "clave"` | Genera el hash para cambiar la contraseña del panel |
 | `npm run db:seed-sql` | Regenera `supabase/seed.sql` y `setup.sql` desde `src/lib/seed.ts` |
 
 ## Imágenes

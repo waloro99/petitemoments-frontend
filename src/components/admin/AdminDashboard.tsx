@@ -21,7 +21,8 @@ export type AdminData = {
 
 type Tab = "productos" | "categorias" | "galeria" | "resenas" | "cotizaciones";
 
-export function AdminDashboard({ data, email, readOnly }: { data: AdminData; email: string; readOnly?: boolean }) {
+export function AdminDashboard({ data, username, readOnly: notice }: { data: AdminData; username: string; readOnly?: string }) {
+  const readOnly = Boolean(notice);
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("productos");
   const [toast, setToast] = useState<{ ok: boolean; text: string } | null>(null);
@@ -55,28 +56,26 @@ export function AdminDashboard({ data, email, readOnly }: { data: AdminData; ema
 
   return (
     <div>
-      {readOnly && (
-        <div className="mb-5 rounded-xl border border-wait-line bg-wait-bg px-4 py-3 text-[13px] font-semibold text-wait-text">
-          Modo demo: estás viendo los datos semilla en solo lectura. Conecta Supabase (ver README) para iniciar sesión y guardar cambios.
+      {notice && (
+        <div role="status" className="mb-5 rounded-xl border border-wait-line bg-wait-bg px-4 py-3 text-[13px] font-semibold text-wait-text">
+          {notice}
         </div>
       )}
       <div className="mb-1.5 flex flex-wrap items-center justify-between gap-3.5">
         <div>
           <div className="pm-eyebrow mb-1.5">Petite Moments · Administración</div>
           <h1 className="font-display text-4xl font-semibold text-ink">Gestión del catálogo</h1>
-          <div className="mt-1 text-xs text-ink-5">Sesión: {email}</div>
+          <div className="mt-1 text-xs text-ink-5">Sesión: {username}</div>
         </div>
         <div className="flex gap-2.5">
           <Link href="/" className="rounded-[11px] border border-line-input bg-white px-[18px] py-[11px] text-[13.5px] font-bold text-mocha hover:bg-warm">
             Ver sitio
           </Link>
-          {!readOnly && (
-            <form action={signOut}>
-              <button className="rounded-[11px] border border-danger-line bg-danger-bg px-[18px] py-[11px] text-[13.5px] font-bold text-danger-text hover:bg-danger-hover">
-                Cerrar sesión
-              </button>
-            </form>
-          )}
+          <form action={signOut}>
+            <button className="rounded-[11px] border border-danger-line bg-danger-bg px-[18px] py-[11px] text-[13.5px] font-bold text-danger-text hover:bg-danger-hover">
+              Cerrar sesión
+            </button>
+          </form>
         </div>
       </div>
 

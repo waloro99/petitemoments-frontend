@@ -1,33 +1,21 @@
 "use client";
-import { browserClient } from "./supabase/browser";
-import { STORAGE_BUCKET } from "./supabase/env";
+import { uploadAdminImage } from "@/app/admin/actions";
 
 /**
- * Reduce la foto en el navegador (máx. 2000 px, WebP) y la sube a Supabase Storage.
- * Las políticas de Storage solo permiten escribir a administradores.
+ * Reduce la foto en el navegador (máx. 2000 px, WebP) y la sube por el servidor
+ * (Server Action verificada con la sesión del panel) al bucket "media" de Supabase.
  */
 export async function uploadImage(file: File, folder: "products" | "gallery", baseName: string) {
-  const { blob, width, height } = await toWebp(file, 2000, 0.85);
-  const name = `${folder}/${slug(baseName) || "foto"}-${crypto.randomUUID().slice(0, 8)}.webp`;
-  const sb = browserClient();
-  const { error } = await sb.storage.from(STORAGE_BUCKET).upload(name, blob, {
-    contentType: "image/webp",
-    cacheControl: "31536000",
-    upsert: false,
-  });
-  if (error) throw new Error(error.message);
-  const { data } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(name);
-  return { url: data.publicUrl, width, height };
+  let { blob, width, height } = await toWebp(file, 2000, 0.85);
+  if (blob.size > 3.5 * 1024 * 1024) ({ blob, width, height } = await toWebp(file, 1600, 0.75));
+  const fd = new FormData();
+  fd.append("file", new File([blob], "foto.webp", { type: blob.type || "image/webp" }));
+  fd.append("folder", folder);
+  fd.append("name", baseName);
+  const res = await uploadAdminImage(fd);
+  if (!res.ok) throw new Error(res.error);
+  return { url: res.url, width, height };
 }
-
-const slug = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-    .slice(0, 50);
 
 async function toWebp(file: File, max: number, quality: number) {
   const bmp = await createImageBitmap(file);

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { LockIcon } from "@/components/icons";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ export default function LoginPage() {
         <p className="mb-[22px] text-sm leading-[1.55] text-ink-4">
           Ingresa para administrar productos, categorías, imágenes, reseñas y cotizaciones.
         </p>
-        <LoginForm configured={isSupabaseConfigured} />
+        <LoginForm />
       </div>
     </main>
   );

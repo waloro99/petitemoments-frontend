@@ -1,15 +1,16 @@
 "use server";
 
 import { updateTag } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/admin-session";
 import { BADGES, BUDGETS, OCCASIONS, STYLES } from "@/lib/config";
 import { CATALOG_TAG } from "@/lib/data";
 import { fromProduct } from "@/lib/db-map";
-import { AuthError, requireAdmin } from "@/lib/auth";
+import { AuthError, checkCredentials, requireAdmin } from "@/lib/auth";
 import { clean } from "@/lib/security";
 import { slugify } from "@/lib/seed";
-import { sessionClient } from "@/lib/supabase/clients";
-import { isSupabaseConfigured, STORAGE_BUCKET } from "@/lib/supabase/env";
+import { STORAGE_BUCKET } from "@/lib/supabase/env";
 import type { Product } from "@/lib/types";
 
 type Res<T = object> = ({ ok: true } & T) | { ok: false; error: string };
@@ -35,28 +36,29 @@ const must = <T,>(r: { data: T; error: { message: string } | null }) => {
 /* ------------------------------------------------------------------ Sesión */
 
 export async function signIn(_: unknown, form: FormData): Promise<{ error?: string }> {
-  if (!isSupabaseConfigured) return { error: "Supabase no está configurado todavía (modo demo)." };
-  const email = clean(form.get("email"), 160);
-  const password = String(form.get("password") ?? "");
-  if (!email || !password) return { error: "Escribe tu correo y contraseña." };
+  const username = clean(form.get("username"), 80);
+  const password = String(form.get("password") ?? "").slice(0, 200);
+  if (!username || !password) return { error: "Escribe tu usuario y contraseña." };
 
-  const sb = await sessionClient();
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error || !data.user) return { error: "Correo o contraseña incorrectos. Intenta de nuevo." };
-
-  const { data: admin } = await sb.from("admin_users").select("user_id").eq("user_id", data.user.id).maybeSingle();
-  if (!admin) {
-    await sb.auth.signOut();
-    return { error: "Esta cuenta no tiene permisos de administración." };
+  const ok = await checkCredentials(username, password);
+  if (!ok) {
+    await new Promise((r) => setTimeout(r, 800)); // frena intentos por fuerza bruta
+    return { error: "Usuario o contraseña incorrectos. Intenta de nuevo." };
   }
+  const store = await cookies();
+  store.set(SESSION_COOKIE, await createSessionToken(username.toLowerCase()), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_MAX_AGE,
+  });
   redirect("/admin");
 }
 
 export async function signOut() {
-  if (isSupabaseConfigured) {
-    const sb = await sessionClient();
-    await sb.auth.signOut();
-  }
+  const store = await cookies();
+  store.delete(SESSION_COOKIE);
   redirect("/admin/login");
 }
 
@@ -68,9 +70,34 @@ function storagePath(url: string): string | null {
   return i >= 0 ? decodeURIComponent(url.slice(i + marker.length)) : null;
 }
 
-async function removeFiles(db: Awaited<ReturnType<typeof sessionClient>>, urls: string[]) {
+type Db = Awaited<ReturnType<typeof requireAdmin>>["db"];
+
+async function removeFiles(db: Db, urls: string[]) {
   const paths = urls.map(storagePath).filter((p): p is string => Boolean(p));
   if (paths.length) await db.storage.from(STORAGE_BUCKET).remove(paths);
+}
+
+const ALLOWED_TYPES = ["image/webp", "image/jpeg", "image/png", "image/avif"];
+
+/** Sube una imagen (ya reducida en el navegador) al bucket público "media". */
+export async function uploadAdminImage(form: FormData): Promise<Res<{ url: string }>> {
+  return guarded(async (db) => {
+    const file = form.get("file");
+    const folder = form.get("folder") === "gallery" ? "gallery" : "products";
+    const base = slugify(clean(form.get("name"), 60)) || "foto";
+    if (!(file instanceof File) || file.size === 0) throw new Error("No llegó ninguna imagen.");
+    if (!ALLOWED_TYPES.includes(file.type)) throw new Error("Formato no permitido. Usa JPG, PNG o WebP.");
+    if (file.size > 4 * 1024 * 1024) throw new Error("La imagen pesa más de 4 MB.");
+    const ext = file.type.split("/")[1].replace("jpeg", "jpg");
+    const path = `${folder}/${base}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+    const { error } = await db.storage.from(STORAGE_BUCKET).upload(path, file, {
+      contentType: file.type,
+      cacheControl: "31536000",
+      upsert: false,
+    });
+    if (error) throw new Error(error.message);
+    return { url: db.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl };
+  });
 }
 
 /** Borra fotos subidas que no llegaron a guardarse (al cancelar la edición). */

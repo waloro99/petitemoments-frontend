@@ -5,9 +5,8 @@ import { AdminDashboard, type AdminData } from "@/components/admin/AdminDashboar
 import { getAdmin } from "@/lib/auth";
 import { PRODUCT_COLS, toCategory, toGallery, toLead, toProduct, toReview } from "@/lib/db-map";
 import { SEED_CATEGORIES, SEED_GALLERY, SEED_PRODUCTS, SEED_REVIEWS } from "@/lib/seed";
-import { sessionClient } from "@/lib/supabase/clients";
+import { serviceClient } from "@/lib/supabase/clients";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { signOut } from "./actions";
 
 export const metadata: Metadata = {
   title: "Panel administrativo",
@@ -24,38 +23,33 @@ export default function AdminPage() {
   );
 }
 
-async function AdminLoader() {
-  if (!isSupabaseConfigured) {
-    const data: AdminData = {
-      products: SEED_PRODUCTS,
-      categories: SEED_CATEGORIES,
-      gallery: SEED_GALLERY,
-      reviews: SEED_REVIEWS,
-      leads: [],
-    };
-    return <AdminDashboard data={data} email="modo demo" readOnly />;
-  }
+const demoData = (): AdminData => ({
+  products: SEED_PRODUCTS,
+  categories: SEED_CATEGORIES,
+  gallery: SEED_GALLERY,
+  reviews: SEED_REVIEWS,
+  leads: [],
+});
 
+async function AdminLoader() {
   const admin = await getAdmin();
-  if (!admin) {
-    const sb = await sessionClient();
-    const {
-      data: { user },
-    } = await sb.auth.getUser();
-    if (!user) redirect("/admin/login");
-    // Usuario autenticado pero sin permisos: no lo devolvemos al login (evita bucles).
+  if (!admin) redirect("/admin/login");
+
+  if (!isSupabaseConfigured) {
     return (
-      <div className="mx-auto my-10 max-w-[460px] rounded-3xl border border-line bg-white p-9 text-center">
-        <h1 className="mb-2 font-display text-[28px] font-semibold">Sin permisos</h1>
-        <p className="mb-6 text-sm text-ink-4">La cuenta {user.email} no está registrada como administradora.</p>
-        <form action={signOut}>
-          <button className="rounded-xl border border-danger-line bg-danger-bg px-5 py-3 text-sm font-bold text-danger-text">Cerrar sesión</button>
-        </form>
-      </div>
+      <AdminDashboard
+        data={demoData()}
+        username={admin.username}
+        readOnly="Modo demo: la base de datos aún no está conectada. Puedes recorrer el panel; los cambios se podrán guardar cuando se configure Supabase."
+      />
     );
   }
 
-  const db = await sessionClient();
+  const db = serviceClient();
+  if (!db) {
+    return <AdminDashboard data={demoData()} username={admin.username} readOnly="Falta SUPABASE_SECRET_KEY en las variables de entorno: el panel no puede leer ni guardar datos." />;
+  }
+
   const [p, c, g, r, l] = await Promise.all([
     db.from("products").select(PRODUCT_COLS).order("sort_order").order("created_at", { ascending: false }),
     db.from("categories").select("key,label,sort_order").order("sort_order").order("label"),
@@ -64,7 +58,16 @@ async function AdminLoader() {
     db.from("leads").select("*").order("created_at", { ascending: false }).limit(200),
   ]);
   const err = p.error || c.error || g.error || r.error || l.error;
-  if (err) throw new Error(`Supabase: ${err.message}`);
+  if (err) {
+    console.error("[admin] Supabase:", err.message);
+    return (
+      <AdminDashboard
+        data={demoData()}
+        username={admin.username}
+        readOnly={`No se pudo leer la base de datos (${err.message}). ¿Ya ejecutaste supabase/setup.sql? Mostrando datos demo.`}
+      />
+    );
+  }
 
   const data: AdminData = {
     products: (p.data ?? []).map(toProduct),
@@ -73,5 +76,5 @@ async function AdminLoader() {
     reviews: (r.data ?? []).map(toReview),
     leads: (l.data ?? []).map(toLead),
   };
-  return <AdminDashboard data={data} email={admin.email} />;
+  return <AdminDashboard data={data} username={admin.username} />;
 }
