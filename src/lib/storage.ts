@@ -55,3 +55,23 @@ export async function deleteImages(db: SupabaseClient, urls: string[]) {
   }
   if (supabasePaths.length) await db.storage.from(STORAGE_BUCKET).remove(supabasePaths);
 }
+
+/** Verifica credenciales de R2 (listado de 1 objeto) y que el dominio público responda. */
+export async function checkStorage(): Promise<Record<string, unknown>> {
+  if (!isR2Configured) return { proveedor: "supabase", nota: "R2 no configurado o incompleto" };
+  const out: Record<string, unknown> = { proveedor: "r2", dominioPublico: R2.publicUrl };
+  try {
+    const res = await r2().fetch(`https://${R2.accountId}.r2.cloudflarestorage.com/${R2.bucket}?list-type=2&max-keys=1`);
+    out.credenciales = res.ok ? "ok" : `error ${res.status}: ${(await res.text()).replace(/\s+/g, " ").slice(0, 160)}`;
+  } catch (e) {
+    out.credenciales = `error: ${e instanceof Error ? e.message : String(e)}`;
+  }
+  try {
+    const res = await fetch(`${R2.publicUrl}/__health-check-inexistente.txt`, { cache: "no-store" });
+    // 404 = el dominio está conectado al bucket (el archivo no existe, es lo esperado)
+    out.dominio = res.status === 404 ? "ok (conectado)" : `respondió ${res.status}`;
+  } catch (e) {
+    out.dominio = `no responde: ${e instanceof Error ? e.message : String(e)}`;
+  }
+  return out;
+}
