@@ -198,9 +198,17 @@ drop policy if exists "admin_users_self" on public.admin_users;
 create policy "admin_users_self" on public.admin_users for select to authenticated
   using (user_id = auth.uid());
 
--- La IP hasheada no se expone por la API pública (solo columnas permitidas).
+-- ---------------------------------------------------------------------
+-- Permisos de la API (los proyectos nuevos de Supabase no los dan por defecto).
+-- La IP hasheada de las reseñas no se expone (solo columnas permitidas).
+-- ---------------------------------------------------------------------
+grant usage on schema public to anon, authenticated, service_role;
+grant select on public.categories, public.products, public.gallery_items to anon, authenticated;
 revoke select on public.reviews from anon, authenticated;
 grant select (id, product_id, name, stars, body, status, created_at) on public.reviews to anon, authenticated;
+grant all on all tables in schema public to service_role;
+alter default privileges in schema public grant all on tables to service_role;
+grant execute on function public.is_admin() to anon, authenticated, service_role;
 
 -- ---------------------------------------------------------------------
 -- Storage: bucket público "media" (lectura pública por URL, escritura solo admin)

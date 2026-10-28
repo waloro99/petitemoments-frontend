@@ -64,7 +64,7 @@ Sin variables de Supabase el sitio arranca en **modo demo**: muestra los datos d
 ## 2. Conectar la base de datos (Supabase)
 
 1. Crea un proyecto en [supabase.com](https://supabase.com) (región sugerida: la más cercana, p. ej. `us-east-1`).
-2. **SQL Editor → New query**: pega el contenido de `supabase/setup.sql` y ejecútalo. Crea tablas, políticas RLS, el trigger de reseñas, el bucket `media` y carga los datos semilla. Se puede volver a correr sin duplicar datos.
+2. **SQL Editor → New query**: pega el contenido de `supabase/setup.sql` y ejecútalo. (Si lo corriste antes del 27/10/2026, ejecuta también `supabase/grants.sql`: los proyectos nuevos de Supabase no dan permisos de API a las tablas por defecto.) Crea tablas, políticas RLS, el trigger de reseñas, el bucket `media` y carga los datos semilla. Se puede volver a correr sin duplicar datos.
 3. **Project Settings → API Keys**: copia a `.env.local`
    - `NEXT_PUBLIC_SUPABASE_URL` (Project URL)
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (publishable / anon)
