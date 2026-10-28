@@ -60,7 +60,7 @@ export function QuoteForm({ productPromise }: { productPromise: Promise<string |
         <div className="mx-auto mb-[22px] grid h-[72px] w-[72px] place-items-center rounded-full bg-ok-bg text-wa">
           <CheckIcon size={36} />
         </div>
-        <h1 className="mb-3 font-display text-[34px] font-semibold">¡Recibimos tu solicitud!</h1>
+        <h1 className="mb-3 font-title text-[34px] font-semibold">¡Recibimos tu solicitud!</h1>
         <p className="mb-7 text-[15.5px] leading-[1.6] text-ink-3">
           Guardamos los datos de tu evento. Para agilizar tu cotización, continúa por WhatsApp: ya preparamos el mensaje con toda tu información.
         </p>
@@ -91,7 +91,7 @@ export function QuoteForm({ productPromise }: { productPromise: Promise<string |
   return (
     <div className="grid grid-cols-[1fr_320px] items-start gap-[34px] tab:grid-cols-1">
       <form onSubmit={onSubmit} noValidate>
-        <h1 className="mb-1.5 font-display text-[44px] font-semibold text-ink mob:text-[36px]">Solicita tu cotización</h1>
+        <h1 className="mb-1.5 font-title text-[44px] font-semibold text-ink mob:text-[36px]">Solicita tu cotización</h1>
         <p className="mb-[26px] text-[15px] text-ink-4">
           Cuéntanos qué celebras y te ayudamos a crear una propuesta a tu medida. Los campos con <span className="text-blush">*</span> son los esenciales.
         </p>

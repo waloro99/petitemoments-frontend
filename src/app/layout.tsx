@@ -23,6 +23,14 @@ const cormorant = localFont({
   ],
 });
 
+// Fuente de títulos grandes (spinwerad, licencia SIL OFL 1.1: ver fonts/spinwerad/OFL.txt).
+// Rango de peso declarado para que el navegador no genere una "negrita falsa".
+const spinwerad = localFont({
+  variable: "--font-spinwerad",
+  display: "swap",
+  src: [{ path: "./fonts/spinwerad/spinwerad.woff2", weight: "100 900", style: "normal" }],
+});
+
 const mulish = localFont({
   variable: "--font-mulish",
   display: "swap",
@@ -63,7 +71,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-GT" className={`${cormorant.variable} ${mulish.variable}`}>
+    <html lang="es-GT" className={`${cormorant.variable} ${mulish.variable} ${spinwerad.variable}`}>
       <body className="relative min-h-screen overflow-x-hidden">
         <a
           href="#contenido"

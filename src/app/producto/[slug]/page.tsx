@@ -102,7 +102,7 @@ async function ProductDetail({ params }: { params: PageProps<"/producto/[slug]">
 
         <div>
           <div className="mb-2 text-[11.5px] font-bold uppercase tracking-[.14em] text-champagne">{cat}</div>
-          <h1 className="mb-2 font-display text-[44px] font-semibold leading-[1.05] text-ink mob:text-[36px]">{p.name}</h1>
+          <h1 className="mb-2 font-title text-[44px] font-semibold leading-[1.05] text-ink mob:text-[36px]">{p.name}</h1>
           <div className="mb-[18px] text-xl font-extrabold text-blush-dark">{p.priceLabel}</div>
           <p className="mb-6 text-[15.5px] leading-[1.65] text-ink-3">{p.longDesc || p.blurb}</p>
 
@@ -186,7 +186,7 @@ async function ProductDetail({ params }: { params: PageProps<"/producto/[slug]">
       {/* RESEÑAS */}
       <section className="mt-14 border-t border-line pt-9" aria-labelledby="h-reviews">
         <div className="mb-5">
-          <h2 id="h-reviews" className="mb-1.5 font-display text-[32px] font-semibold text-ink">Reseñas de clientes</h2>
+          <h2 id="h-reviews" className="mb-1.5 font-title text-[32px] font-semibold text-ink">Reseñas de clientes</h2>
           <div className="flex items-center gap-[9px] text-sm font-semibold text-ink-4">
             <span className="text-[17px] tracking-[2px] text-star" aria-hidden>
               {count ? starsText(Math.round(avg)) : "☆☆☆☆☆"}

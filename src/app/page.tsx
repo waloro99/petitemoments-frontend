@@ -77,7 +77,7 @@ export default async function HomePage() {
             <span className="h-px w-[26px] bg-gold" aria-hidden />
             Detalles que se celebran · Ciudad de Guatemala
           </div>
-          <h1 className="mb-5 font-display text-[60px] font-semibold leading-[1.04] tracking-[-.01em] text-ink tab:text-[46px] mob:text-[36px]">
+          <h1 className="mb-5 font-title text-[50px] font-semibold leading-[1.08] tracking-[-.01em] text-ink tab:text-[42px] mob:text-[32px]">
             Decoración, sorpresas y detalles para celebrar <em className="italic text-blush">momentos especiales</em>.
           </h1>
           <p className="mb-8 max-w-[520px] text-lg leading-[1.6] text-ink-3 mob:text-base">
@@ -290,7 +290,7 @@ export default async function HomePage() {
             }}
           />
           <div className="relative">
-            <h2 className="mx-auto mb-3.5 max-w-[620px] font-display text-[42px] font-semibold leading-[1.1] text-white mob:text-[30px]">
+            <h2 className="mx-auto mb-3.5 max-w-[620px] font-title text-[42px] font-semibold leading-[1.1] text-white mob:text-[30px]">
               Cuéntanos qué quieres celebrar y te ayudamos a armar la mejor opción
             </h2>
             <p className="mx-auto mb-[30px] max-w-[520px] text-[16.5px] text-white/90">

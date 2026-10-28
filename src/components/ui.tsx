@@ -41,7 +41,7 @@ export function PageIntro({
     <div className={`flex flex-wrap items-start gap-3 ${className}`}>
       <div className={`grid h-11 w-11 flex-none place-items-center rounded-[13px] ${iconClass}`}>{icon}</div>
       <div className="min-w-0 flex-1">
-        <h1 className="mb-1 font-display text-[44px] font-semibold leading-none text-ink mob:text-[36px]">{title}</h1>
+        <h1 className="mb-1 font-title text-[44px] font-semibold leading-none text-ink mob:text-[36px]">{title}</h1>
         <p className="m-0 max-w-[640px] text-[15px] text-ink-4">{children}</p>
       </div>
     </div>
