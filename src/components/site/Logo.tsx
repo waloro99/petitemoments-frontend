@@ -1,26 +1,18 @@
+import Image from "next/image";
 import Link from "next/link";
+import logo from "../../../public/brand/logo-petite-moments.png";
+import logoLight from "../../../public/brand/logo-petite-moments-claro.png";
 
-// Wordmark tipográfico provisional (no es el logo definitivo de la marca).
-export function LogoMark({ size = 40, fontSize = 19 }: { size?: number; fontSize?: number }) {
+/** Logo oficial de la marca (wordmark "Petite Moments"). */
+export function Logo() {
   return (
-    <span
-      aria-hidden
-      className="grid place-items-center rounded-full font-display font-bold text-white shadow-[0_4px_12px_-4px_rgba(201,156,116,.6)]"
-      style={{ width: size, height: size, fontSize, background: "linear-gradient(135deg,#E7BFC2,#C99C74)" }}
-    >
-      pm
-    </span>
+    <Link href="/" className="flex items-center rounded-lg" aria-label="Petite Moments Guatemala, inicio">
+      <Image src={logo} alt="Petite Moments" priority className="h-[54px] w-auto mob:h-[46px]" sizes="130px" />
+    </Link>
   );
 }
 
-export function Logo() {
-  return (
-    <Link href="/" className="flex items-center gap-[11px] rounded-lg" aria-label="Petite Moments Guatemala, inicio">
-      <LogoMark />
-      <span className="text-left leading-none">
-        <span className="block font-display text-[23px] font-semibold tracking-[.01em] text-ink">Petite Moments</span>
-        <span className="mt-[3px] block text-[9.5px] font-bold tracking-[.32em] text-champagne">GUATEMALA</span>
-      </span>
-    </Link>
-  );
+/** Versión clara para fondos oscuros (footer). */
+export function LogoLight({ className = "h-[64px] w-auto" }: { className?: string }) {
+  return <Image src={logoLight} alt="Petite Moments" className={className} sizes="150px" />;
 }

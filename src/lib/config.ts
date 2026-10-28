@@ -23,7 +23,7 @@ export const SITE = {
   shortName: "Petite Moments",
   url: resolveSiteUrl(),
   description:
-    "Decoración con globos, sorpresas personalizadas, repostería, fotografía e inflables para celebrar momentos especiales en Ciudad de Guatemala.",
+    "Globos, cake toppers, sorpresas, centros de mesa, juegos y detalles personalizados para cumpleaños, baby showers, graduaciones y todo tipo de celebraciones en Ciudad de Guatemala.",
   whatsapp: "50242278353",
   whatsappDisplay: "+502 4227-8353",
   // Placeholder: confirmar el correo real con la clienta.
@@ -93,9 +93,9 @@ export const QUOTE_OPTIONS = {
   servicio: [
     "Decoración",
     "Sorpresa",
-    "Repostería",
-    "Fotografía",
-    "Inflable",
+    "Cake topper",
+    "Personalizables (centros de mesa, vinil, etc.)",
+    "Juegos para eventos",
     "Paquete completo",
     "No estoy seguro/a",
   ],

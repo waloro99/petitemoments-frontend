@@ -8,6 +8,15 @@ const supabaseHost = (() => {
   }
 })();
 
+// Dominio público de las imágenes en Cloudflare R2 (p. ej. https://media.tudominio.com)
+const r2Host = (() => {
+  try {
+    return process.env.R2_PUBLIC_URL ? new URL(process.env.R2_PUBLIC_URL).hostname : null;
+  } catch {
+    return null;
+  }
+})();
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
@@ -17,12 +26,15 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "4mb" },
   },
   images: {
-    formats: ["image/avif", "image/webp"],
+    // Solo WebP y caché larga: reduce las transformaciones (el plan Hobby de Vercel incluye 5,000/mes).
+    formats: ["image/webp"],
+    minimumCacheTTL: 2678400, // 31 días
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
       ...(supabaseHost && !supabaseHost.endsWith(".supabase.co")
         ? [{ protocol: "https" as const, hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
         : []),
+      ...(r2Host ? [{ protocol: "https" as const, hostname: r2Host }] : []),
     ],
   },
   turbopack: {

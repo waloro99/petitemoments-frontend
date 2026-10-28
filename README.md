@@ -1,8 +1,8 @@
 # Petite Moments GT · Sitio web + panel administrativo
 
-Sitio de catálogo y cotización para **Petite Moments GT** (decoración con globos, sorpresas, repostería, fotografía, inflables y paquetes en Ciudad de Guatemala). La conversión principal es WhatsApp (**+502 4227-8353**) y la secundaria, el formulario/correo. Incluye un panel para que la dueña administre el contenido sin depender de un desarrollador.
+Sitio de catálogo y cotización para **Petite Moments GT** (globos, cake toppers, sorpresas, centros de mesa, juegos y detalles personalizados para celebraciones en Ciudad de Guatemala). La conversión principal es WhatsApp (**+502 4227-8353**) y la secundaria, el formulario/correo. Incluye un panel para que la dueña administre el contenido sin depender de un desarrollador.
 
-**Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Supabase (Postgres + Auth + Storage) · `next/font` · `next/image` · listo para Vercel.
+**Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Supabase (Postgres) · Cloudflare R2 (imágenes) · `next/font` · `next/image` · Vercel.
 
 ---
 
@@ -87,6 +87,17 @@ El panel funciona aunque la base no esté conectada (en modo demo solo se puede 
 
 > Las **reseñas semilla son de muestra**. Antes de publicar: `delete from public.reviews;` o cárgalas reales con autorización.
 
+## 3b. Imágenes en Cloudflare R2 (recomendado)
+
+R2 da 10 GB gratis y no cobra por la descarga de imágenes. Las fotos se suben desde el panel (el navegador las reduce a WebP de máx. 2000 px) y el servidor las guarda en R2.
+
+1. Cloudflare → **R2 Object Storage** → *Create bucket* → nombre `petitemoments-media` (ubicación automática).
+2. Bucket → **Settings → Public access → Custom Domains → Connect Domain** → `media.tudominio.com` (el dominio ya está en Cloudflare, el registro DNS se crea solo).
+3. R2 → **Manage API tokens → Create API token**: permiso *Object Read & Write*, solo para ese bucket. Copia *Access Key ID*, *Secret Access Key* y tu *Account ID*.
+4. En Vercel agrega `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL=https://media.tudominio.com` y haz *Redeploy*.
+
+Sin estas variables, las imágenes se guardan en Supabase Storage (1 GB gratis).
+
 ## 4. Aviso por correo de cotizaciones (opcional)
 
 1. Crea cuenta en [resend.com](https://resend.com), verifica el dominio (`petitemomentsgt.com`) y genera una API key.
@@ -100,8 +111,11 @@ Si no configuras Resend, las cotizaciones igual se guardan y se ven en el panel 
 1. Sube el repo a GitHub e impórtalo en [vercel.com/new](https://vercel.com/new) (framework: Next.js, sin cambios de build).
 2. En **Settings → Environment Variables** agrega las mismas variables de `.env.local`, con `NEXT_PUBLIC_SITE_URL` = dominio final (afecta canonical, sitemap y datos estructurados).
 3. Deploy. El build lee el catálogo de Supabase para prerenderizar las páginas: **ejecuta `setup.sql` antes del primer deploy**.
-4. Dominio propio: **Settings → Domains**.
+4. Dominio propio (DNS en Cloudflare): Vercel → **Settings → Domains → Add** `tudominio.com` y `www.tudominio.com`. Copia los registros que Vercel te muestra (A para el dominio raíz y CNAME para `www`) en Cloudflare → **DNS → Records**, con el proxy en **DNS only** (nube gris). Luego cambia `NEXT_PUBLIC_SITE_URL` al dominio final y haz *Redeploy*.
 5. Registra el sitio en Google Search Console y envía `https://tu-dominio/sitemap.xml`.
+6. Cron diario `/api/keepalive` (en `vercel.json`): hace una consulta mínima para que Supabase gratis no pause el proyecto por inactividad.
+
+> **Ojo:** el plan Hobby de Vercel es solo para uso personal no comercial. Para un negocio corresponde Vercel Pro o mover el hosting a Cloudflare.
 
 ## Cómo se actualiza el contenido
 

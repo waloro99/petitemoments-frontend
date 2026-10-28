@@ -8,9 +8,9 @@ import { BUDGETS, OCCASIONS, STYLES } from "@/lib/config";
 import { categoryLabel, getPublicCatalog } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Catálogo de decoración, sorpresas y repostería",
+  title: "Catálogo de decoración, cake toppers y sorpresas",
   description:
-    "Catálogo de Petite Moments GT: arcos de globos, bouquets, cajas sorpresa, mesa dulce, pasteles, fotografía, inflables y paquetes para eventos en Guatemala. Filtra por ocasión, estilo y presupuesto.",
+    "Catálogo de Petite Moments GT: arcos de globos, bouquets, cajas sorpresa, cake toppers, centros de mesa, juegos y paquetes para eventos en Guatemala. Filtra por ocasión, estilo y presupuesto.",
   alternates: { canonical: "/catalogo" },
 };
 

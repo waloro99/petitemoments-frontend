@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SITE } from "@/lib/config";
-import { LogoMark } from "@/components/site/Logo";
+import { LogoLight } from "@/components/site/Logo";
 import { WA_MSG, waLink } from "@/lib/whatsapp";
 
 const heading = "mb-3.5 text-xs font-extrabold uppercase tracking-[.14em] text-footer-head";
@@ -14,8 +14,7 @@ export function Footer() {
       <div className="pm-container grid max-w-[1240px] grid-cols-[1.4fr_1fr_1fr_1.1fr] gap-10 pb-[30px] pt-[52px] tab:grid-cols-1 mob:grid-cols-2">
         <div className="mob:col-span-2">
           <div className="mb-4 flex items-center gap-[11px]">
-            <LogoMark size={38} fontSize={18} />
-            <span className="font-display text-[22px] font-semibold text-white">Petite Moments</span>
+            <LogoLight />
           </div>
           <p className="mb-[18px] max-w-[280px] text-sm leading-[1.6] text-footer-muted">
             Decoración, sorpresas y detalles para celebrar momentos especiales en Ciudad de Guatemala.
@@ -43,8 +42,8 @@ export function Footer() {
           <ul className="flex flex-col gap-[11px] text-sm text-footer-muted">
             <li><Link href="/catalogo?categoria=globos" className="hover:text-white">Decoración con globos</Link></li>
             <li><Link href="/catalogo?categoria=sorpresas" className="hover:text-white">Sorpresas personalizadas</Link></li>
-            <li><Link href="/catalogo?categoria=reposteria" className="hover:text-white">Repostería</Link></li>
-            <li><Link href="/catalogo?categoria=fotografia" className="hover:text-white">Fotografía e inflables</Link></li>
+            <li><Link href="/catalogo?categoria=cake-toppers" className="hover:text-white">Cake toppers</Link></li>
+            <li><Link href="/catalogo?categoria=personalizables" className="hover:text-white">Personalizables y juegos</Link></li>
           </ul>
         </div>
         <div>

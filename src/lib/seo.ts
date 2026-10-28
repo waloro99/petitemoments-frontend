@@ -5,9 +5,9 @@ export const KEYWORDS = [
   "globos personalizados Guatemala",
   "sorpresas para cumpleaños Guatemala",
   "baby shower Guatemala",
-  "inflables para eventos Guatemala",
-  "repostería para eventos Guatemala",
-  "fotografía de cumpleaños Guatemala",
+  "cake toppers personalizados Guatemala",
+  "centros de mesa personalizados Guatemala",
+  "juegos para eventos Guatemala",
   "decoración de eventos en Ciudad de Guatemala",
 ];
 

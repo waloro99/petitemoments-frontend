@@ -22,7 +22,7 @@ export default function OgImage() {
         <div style={{ fontSize: 28, letterSpacing: 8, opacity: 0.9 }}>CIUDAD DE GUATEMALA</div>
         <div style={{ fontSize: 96, fontWeight: 700, marginTop: 16 }}>Petite Moments</div>
         <div style={{ fontSize: 40, marginTop: 20, maxWidth: 900, lineHeight: 1.3 }}>
-          Decoración con globos, sorpresas, repostería y detalles para celebrar momentos especiales.
+          Globos, cake toppers, sorpresas, centros de mesa, juegos y detalles personalizados para tus celebraciones.
         </div>
       </div>
     ),

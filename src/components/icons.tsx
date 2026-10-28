@@ -108,3 +108,9 @@ export const MailIcon = ({ size = 18, ...p }: P) => (
 export const InstagramIcon = ({ size = 16, ...p }: P) => (
   <svg {...base(size, p, 1.6)}><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" /></svg>
 );
+export const CraftIcon = ({ size = 26, ...p }: P) => (
+  <svg {...base(size, p, 1.4)}><path d="M12 3l1.8 3.9 4.2.5-3.1 2.9.8 4.2L12 12.4 8.3 14.5l.8-4.2L6 7.4l4.2-.5z" /><path d="M5 21h14M8 17.5h8" /></svg>
+);
+export const BallIcon = ({ size = 26, ...p }: P) => (
+  <svg {...base(size, p, 1.4)}><circle cx="12" cy="12" r="8.5" /><path d="M12 3.5v17M3.5 12h17M6 6c2.6 2.3 2.6 9.7 0 12M18 6c-2.6 2.3-2.6 9.7 0 12" /></svg>
+);

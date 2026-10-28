@@ -6,7 +6,7 @@ import { getPublicCatalog } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Cotizar decoración o sorpresa para tu evento",
   description:
-    "Solicita tu cotización de decoración con globos, sorpresas, repostería, fotografía o inflables en Guatemala. Respondemos por WhatsApp en menos de 24 h.",
+    "Solicita tu cotización de decoración con globos, cake toppers, sorpresas, centros de mesa o juegos para eventos en Guatemala. Respondemos por WhatsApp en menos de 24 h.",
   alternates: { canonical: "/cotizar" },
 };
 

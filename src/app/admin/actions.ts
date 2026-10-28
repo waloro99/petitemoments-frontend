@@ -10,7 +10,7 @@ import { fromProduct } from "@/lib/db-map";
 import { AuthError, checkCredentials, requireAdmin } from "@/lib/auth";
 import { clean } from "@/lib/security";
 import { slugify } from "@/lib/seed";
-import { STORAGE_BUCKET } from "@/lib/supabase/env";
+import { deleteImages, putImage } from "@/lib/storage";
 import type { Product } from "@/lib/types";
 
 type Res<T = object> = ({ ok: true } & T) | { ok: false; error: string };
@@ -64,18 +64,9 @@ export async function signOut() {
 
 /* ------------------------------------------------------------------ Storage */
 
-function storagePath(url: string): string | null {
-  const marker = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
-  const i = url.indexOf(marker);
-  return i >= 0 ? decodeURIComponent(url.slice(i + marker.length)) : null;
-}
-
 type Db = Awaited<ReturnType<typeof requireAdmin>>["db"];
 
-async function removeFiles(db: Db, urls: string[]) {
-  const paths = urls.map(storagePath).filter((p): p is string => Boolean(p));
-  if (paths.length) await db.storage.from(STORAGE_BUCKET).remove(paths);
-}
+const removeFiles = (db: Db, urls: string[]) => deleteImages(db, urls);
 
 const ALLOWED_TYPES = ["image/webp", "image/jpeg", "image/png", "image/avif"];
 
@@ -90,13 +81,7 @@ export async function uploadAdminImage(form: FormData): Promise<Res<{ url: strin
     if (file.size > 4 * 1024 * 1024) throw new Error("La imagen pesa más de 4 MB.");
     const ext = file.type.split("/")[1].replace("jpeg", "jpg");
     const path = `${folder}/${base}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
-    const { error } = await db.storage.from(STORAGE_BUCKET).upload(path, file, {
-      contentType: file.type,
-      cacheControl: "31536000",
-      upsert: false,
-    });
-    if (error) throw new Error(error.message);
-    return { url: db.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl };
+    return { url: await putImage(db, path, file, file.type) };
   });
 }
 

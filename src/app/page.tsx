@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 import {
   BalloonsIcon,
   CakeIcon,
-  CameraIcon,
   CheckCircleIcon,
   DollarIcon,
   GiftIcon,
-  InflatableIcon,
+  CraftIcon,
+  BallIcon,
   PackageIcon,
   PinIcon,
   UserIcon,
@@ -24,16 +24,16 @@ import { WA_MSG, waLink } from "@/lib/whatsapp";
 export const metadata: Metadata = {
   title: { absolute: "Petite Moments GT · Decoración con globos, sorpresas y eventos en Guatemala" },
   description:
-    "Decoración con globos, sorpresas personalizadas, repostería, fotografía e inflables para cumpleaños, baby showers y eventos en Ciudad de Guatemala. Cotiza por WhatsApp.",
+    "Globos, cake toppers, sorpresas, centros de mesa, juegos y detalles personalizados para cumpleaños, baby showers, graduaciones y todo tipo de celebraciones en Ciudad de Guatemala. Cotiza por WhatsApp.",
   alternates: { canonical: "/" },
 };
 
 const CATEGORY_CARDS: { href: string; title: string; text: string; icon: ReactNode; tint: string; color: string }[] = [
   { href: "/catalogo?categoria=globos", title: "Decoración con globos", text: "Arcos orgánicos, backdrops, números, columnas y paredes decorativas.", icon: <BalloonsIcon />, tint: "#F7E7E3", color: "#C0808C" },
   { href: "/catalogo?categoria=sorpresas", title: "Sorpresas personalizadas", text: "Cajas, bolsas, globos con mensaje y detalles para fechas especiales.", icon: <GiftIcon />, tint: "#F1E8DA", color: "#B08968" },
-  { href: "/catalogo?categoria=reposteria", title: "Repostería", text: "Pasteles temáticos, cupcakes, postres y mesa dulce para tu evento.", icon: <CakeIcon />, tint: "#F0E9E1", color: "#B58A6E" },
-  { href: "/catalogo?categoria=fotografia", title: "Fotografía", text: "Cobertura de eventos, sesiones de cumpleaños y fotos de tu montaje.", icon: <CameraIcon />, tint: "#EDE9E0", color: "#9A8A72" },
-  { href: "/catalogo?categoria=inflables", title: "Inflables", text: "Opciones para eventos infantiles y actividades familiares, a cotizar.", icon: <InflatableIcon />, tint: "#EAEAE0", color: "#8FA07E" },
+  { href: "/catalogo?categoria=cake-toppers", title: "Cake toppers", text: "Toppers personalizados con nombres, edades y temáticas para darle el toque final a tu pastel.", icon: <CakeIcon />, tint: "#F0E9E1", color: "#B58A6E" },
+  { href: "/catalogo?categoria=personalizables", title: "Personalizables para eventos", text: "Centros de mesa, vinil para globos, juegos de gender reveal, pizarrones, crafting y más, hechos a tu estilo.", icon: <CraftIcon />, tint: "#EDE9E0", color: "#9A8A72" },
+  { href: "/catalogo?categoria=juegos", title: "Juegos para eventos", text: "Hockey de mesa, fútbol, básquet y más juegos para que grandes y chicos se diviertan en tu celebración.", icon: <BallIcon />, tint: "#EAEAE0", color: "#8FA07E" },
 ];
 
 const GUIDE = [
@@ -81,7 +81,7 @@ export default async function HomePage() {
             Decoración, sorpresas y detalles para celebrar <em className="italic text-blush">momentos especiales</em>.
           </h1>
           <p className="mb-8 max-w-[520px] text-lg leading-[1.6] text-ink-3 mob:text-base">
-            Globos, repostería, fotografía, inflables y experiencias personalizadas para cumpleaños, baby showers, aniversarios y eventos.
+            Globos, cake toppers, sorpresas, centros de mesa, juegos y detalles personalizados para cumpleaños, baby showers, graduaciones y todo tipo de celebraciones.
           </p>
           <div className="flex flex-wrap gap-[13px]">
             <a
@@ -91,7 +91,7 @@ export default async function HomePage() {
               className="inline-flex items-center gap-[9px] rounded-full bg-wa px-[26px] py-4 text-[15.5px] font-bold text-white shadow-[0_10px_24px_-8px_rgba(37,211,102,.55)] transition hover:-translate-y-px hover:bg-wa-dark"
             >
               <WhatsAppIcon size={19} />
-              Cotizar por WhatsApp
+              ¡Reserva tu evento!
             </a>
             <Link
               href="/catalogo"
@@ -189,7 +189,7 @@ export default async function HomePage() {
               <PackageIcon />
             </span>
             <h3 className="mb-[7px] font-display text-2xl font-semibold text-white">Paquetes para eventos</h3>
-            <p className="m-0 text-sm leading-[1.55] text-white/85">Decoración + repostería + fotografía + inflable, listos para cotizar.</p>
+            <p className="m-0 text-sm leading-[1.55] text-white/85">Decoración + cake topper + personalizables + juegos, listos para cotizar.</p>
           </Link>
         </div>
       </section>
@@ -222,7 +222,7 @@ export default async function HomePage() {
           <div className="mb-[26px] flex flex-wrap items-end justify-between gap-3.5">
             <div>
               <div className="pm-eyebrow mb-2.5">Trabajos realizados</div>
-              <h2 id="h-works" className="pm-h2">Montajes reales, celebraciones reales</h2>
+              <h2 id="h-works" className="pm-h2">Inspiración para tu próxima celebración</h2>
             </div>
             <Link href="/galeria" className="text-[14.5px] font-bold text-blush hover:underline">Ver galería completa →</Link>
           </div>
@@ -318,7 +318,7 @@ export default async function HomePage() {
           "@context": "https://schema.org",
           "@type": "ItemList",
           name: "Servicios de Petite Moments GT",
-          itemListElement: [...CATEGORY_CARDS.map((c) => ({ t: c.title, d: c.text, h: c.href })), { t: "Paquetes para eventos", d: "Decoración, repostería, fotografía e inflable en un solo paquete.", h: "/catalogo?categoria=paquetes" }].map((s, i) => ({
+          itemListElement: [...CATEGORY_CARDS.map((c) => ({ t: c.title, d: c.text, h: c.href })), { t: "Paquetes para eventos", d: "Decoración, cake topper, personalizables y juegos en un solo paquete.", h: "/catalogo?categoria=paquetes" }].map((s, i) => ({
             "@type": "ListItem",
             position: i + 1,
             item: {
