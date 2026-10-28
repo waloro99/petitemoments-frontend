@@ -24,6 +24,7 @@ export function localBusinessLd() {
     telephone: `+${SITE.whatsapp}`,
     email: SITE.email,
     image: absUrl("/opengraph-image"),
+    logo: absUrl("/brand/logo-petite-moments.png"),
     priceRange: "Q–QQQ",
     address: {
       "@type": "PostalAddress",
@@ -31,7 +32,10 @@ export function localBusinessLd() {
       addressRegion: SITE.region,
       addressCountry: SITE.country,
     },
-    areaServed: { "@type": "City", name: SITE.city },
+    areaServed: [
+      { "@type": "City", name: SITE.city },
+      { "@type": "AdministrativeArea", name: "Departamento de Guatemala" },
+    ],
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",

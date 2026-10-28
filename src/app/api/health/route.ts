@@ -20,6 +20,18 @@ export async function GET(request: Request) {
   }
 
   out.imagenes = await checkStorage();
+
+  // Correo de avisos (Resend): solo indica si está configurado y desde qué dominio sale.
+  const from = process.env.RESEND_FROM || "";
+  out.correoAvisos = process.env.RESEND_API_KEY
+    ? `configurado (remitente @${from.match(/@([^>\s]+)/)?.[1] ?? "?"})`
+    : "sin RESEND_API_KEY: las cotizaciones se guardan pero no avisan por correo";
+
+  out.analitica = {
+    googleAnalytics: process.env.NEXT_PUBLIC_GA_ID ? "configurado" : "falta NEXT_PUBLIC_GA_ID",
+    metaPixel: process.env.NEXT_PUBLIC_META_PIXEL_ID ? "configurado" : "falta NEXT_PUBLIC_META_PIXEL_ID",
+    searchConsole: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? "etiqueta configurada" : "sin etiqueta (no hace falta si se verificó por DNS)",
+  };
   // ?escritura=1 hace una prueba real de subida/borrado en R2
   if (new URL(request.url).searchParams.get("escritura") === "1") out.pruebaEscritura = await checkStorageWrite(new URL(request.url).origin);
   return Response.json(out, { headers: { "Cache-Control": "no-store" } });

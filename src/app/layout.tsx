@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Analytics } from "@/components/Analytics";
 import { JsonLd } from "@/components/JsonLd";
 import { Footer, WhatsAppFloat } from "@/components/site/Footer";
 import { Navbar } from "@/components/site/Navbar";
@@ -23,12 +24,13 @@ const cormorant = localFont({
   ],
 });
 
-// Fuente de títulos grandes (spinwerad, licencia SIL OFL 1.1: ver fonts/spinwerad/OFL.txt).
-// Rango de peso declarado para que el navegador no genere una "negrita falsa".
-const spinwerad = localFont({
-  variable: "--font-spinwerad",
+// Fuente de títulos grandes: subconjunto latino de Foglihten No07 de gluk (glukfonts.pl),
+// licencia SIL OFL 1.1 (ver fonts/foglihten/OFL.txt). Rango de peso declarado para evitar "negrita falsa".
+const titleFont = localFont({
+  variable: "--font-title-face",
   display: "swap",
-  src: [{ path: "./fonts/spinwerad/spinwerad.woff2", weight: "100 900", style: "normal" }],
+  adjustFontFallback: "Times New Roman",
+  src: [{ path: "./fonts/foglihten/petite-title.woff2", weight: "100 900", style: "normal" }],
 });
 
 const mulish = localFont({
@@ -59,8 +61,17 @@ export const metadata: Metadata = {
     url: "/",
   },
   twitter: { card: "summary_large_image" },
-  alternates: { canonical: "/" },
+  // Sin canonical global: cada página declara el suyo (si no, todas apuntarían al inicio).
   formatDetection: { telephone: false },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+  verification: {
+    // Google Search Console (opción "Etiqueta HTML"): solo el valor de content="..."
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    // Meta Business → Seguridad de la marca → Dominios (opción "Etiqueta meta")
+    other: process.env.NEXT_PUBLIC_META_DOMAIN_VERIFICATION
+      ? { "facebook-domain-verification": process.env.NEXT_PUBLIC_META_DOMAIN_VERIFICATION }
+      : undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -71,7 +82,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-GT" className={`${cormorant.variable} ${mulish.variable} ${spinwerad.variable}`}>
+    <html lang="es-GT" className={`${cormorant.variable} ${mulish.variable} ${titleFont.variable}`}>
       <body className="relative min-h-screen overflow-x-hidden">
         <a
           href="#contenido"
@@ -84,6 +95,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Footer />
         <WhatsAppFloat />
         <JsonLd data={localBusinessLd()} />
+        <Analytics />
       </body>
     </html>
   );

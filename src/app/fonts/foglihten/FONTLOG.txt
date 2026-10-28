@@ -1,0 +1,7 @@
+Fuente original: FoglihtenNo07, (c) 2011-2015 gluk (www.glukfonts.pl), SIL Open Font License 1.1.
+
+Modificaciones para este sitio (Versión Modificada según la OFL):
+- Subconjunto a caracteres latinos usados en español (U+0020-007E, U+00A0-00FF y puntuación tipográfica).
+- Conservadas todas las funciones OpenType (calt, liga, fina, init, dlig, ss01-ss03); en el sitio se usa solo "liga".
+- Convertida a WOFF2.
+- Renombrada a "PetiteTitle", porque "FoglihtenNo07" es un Nombre de Fuente Reservado.

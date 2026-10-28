@@ -40,6 +40,7 @@ export function ProductCard({ p, catLabel, priority }: { p: Product; catLabel: s
           </Link>
           <a
             href={waLink(WA_MSG.product(p.name))}
+            data-producto={p.name}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Cotizar ${p.name} por WhatsApp`}

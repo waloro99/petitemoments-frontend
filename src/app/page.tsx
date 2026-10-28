@@ -29,19 +29,19 @@ export const metadata: Metadata = {
 };
 
 const CATEGORY_CARDS: { href: string; title: string; text: string; icon: ReactNode; tint: string; color: string }[] = [
-  { href: "/catalogo?categoria=globos", title: "Decoración con globos", text: "Arcos orgánicos, backdrops, números, columnas y paredes decorativas.", icon: <BalloonsIcon />, tint: "#F7E7E3", color: "#C0808C" },
-  { href: "/catalogo?categoria=sorpresas", title: "Sorpresas personalizadas", text: "Cajas, bolsas, globos con mensaje y detalles para fechas especiales.", icon: <GiftIcon />, tint: "#F1E8DA", color: "#B08968" },
-  { href: "/catalogo?categoria=cake-toppers", title: "Cake toppers", text: "Toppers personalizados con nombres, edades y temáticas para darle el toque final a tu pastel.", icon: <CakeIcon />, tint: "#F0E9E1", color: "#B58A6E" },
-  { href: "/catalogo?categoria=personalizables", title: "Personalizables para eventos", text: "Centros de mesa, vinil para globos, juegos de gender reveal, pizarrones, crafting y más, hechos a tu estilo.", icon: <CraftIcon />, tint: "#EDE9E0", color: "#9A8A72" },
-  { href: "/catalogo?categoria=juegos", title: "Juegos para eventos", text: "Hockey de mesa, fútbol, básquet y más juegos para que grandes y chicos se diviertan en tu celebración.", icon: <BallIcon />, tint: "#EAEAE0", color: "#8FA07E" },
+  { href: "/servicios/decoracion-con-globos", title: "Decoración con globos", text: "Arcos orgánicos, backdrops, números, columnas y paredes decorativas.", icon: <BalloonsIcon />, tint: "#F7E7E3", color: "#C0808C" },
+  { href: "/servicios/sorpresas-personalizadas", title: "Sorpresas personalizadas", text: "Cajas, bolsas, globos con mensaje y detalles para fechas especiales.", icon: <GiftIcon />, tint: "#F1E8DA", color: "#B08968" },
+  { href: "/servicios/cake-toppers-personalizados", title: "Cake toppers", text: "Toppers personalizados con nombres, edades y temáticas para darle el toque final a tu pastel.", icon: <CakeIcon />, tint: "#F0E9E1", color: "#B58A6E" },
+  { href: "/servicios/centros-de-mesa-personalizados", title: "Personalizables para eventos", text: "Centros de mesa, vinil para globos, juegos de gender reveal, pizarrones, crafting y más, hechos a tu estilo.", icon: <CraftIcon />, tint: "#EDE9E0", color: "#9A8A72" },
+  { href: "/servicios/juegos-para-eventos", title: "Juegos para eventos", text: "Hockey de mesa, fútbol, básquet y más juegos para que grandes y chicos se diviertan en tu celebración.", icon: <BallIcon />, tint: "#EAEAE0", color: "#8FA07E" },
 ];
 
 const GUIDE = [
-  { emoji: "🎈", label: "Quiero decorar un cumpleaños", href: "/catalogo?categoria=globos" },
-  { emoji: "🎁", label: "Quiero enviar una sorpresa", href: "/catalogo?categoria=sorpresas" },
+  { emoji: "🎈", label: "Quiero decorar un cumpleaños", href: "/eventos/cumpleanos-infantiles" },
+  { emoji: "🎁", label: "Quiero enviar una sorpresa", href: "/servicios/sorpresas-personalizadas" },
   { emoji: "🧸", label: "Quiero algo para niños", href: "/catalogo?ocasion=infantil" },
   { emoji: "🥂", label: "Quiero algo elegante para adultos", href: "/catalogo?estilo=elegante" },
-  { emoji: "✨", label: "Quiero cotizar un paquete completo", href: "/catalogo?categoria=paquetes" },
+  { emoji: "✨", label: "Quiero cotizar un paquete completo", href: "/servicios/paquetes-para-eventos" },
 ];
 
 const STEPS = [
@@ -181,7 +181,7 @@ export default async function HomePage() {
             </Link>
           ))}
           <Link
-            href="/catalogo?categoria=paquetes"
+            href="/servicios/paquetes-para-eventos"
             className="rounded-[20px] p-[26px] text-left shadow-[0_10px_26px_-14px_rgba(192,128,140,.6)] transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[0_20px_38px_-18px_rgba(192,128,140,.55)]"
             style={{ background: "linear-gradient(150deg,#C0808C,#B08968)" }}
           >
@@ -318,7 +318,7 @@ export default async function HomePage() {
           "@context": "https://schema.org",
           "@type": "ItemList",
           name: "Servicios de Petite Moments GT",
-          itemListElement: [...CATEGORY_CARDS.map((c) => ({ t: c.title, d: c.text, h: c.href })), { t: "Paquetes para eventos", d: "Decoración, cake topper, personalizables y juegos en un solo paquete.", h: "/catalogo?categoria=paquetes" }].map((s, i) => ({
+          itemListElement: [...CATEGORY_CARDS.map((c) => ({ t: c.title, d: c.text, h: c.href })), { t: "Paquetes para eventos", d: "Decoración, cake topper, personalizables y juegos en un solo paquete.", h: "/servicios/paquetes-para-eventos" }].map((s, i) => ({
             "@type": "ListItem",
             position: i + 1,
             item: {

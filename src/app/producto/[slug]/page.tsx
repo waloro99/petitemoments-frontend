@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CheckIcon, ClockIcon, WhatsAppIcon } from "@/components/icons";
+import { TrackProductView } from "@/components/Analytics";
 import { JsonLd } from "@/components/JsonLd";
 import { isPlaceholder } from "@/components/Media";
 import { Carousel } from "@/components/product/Carousel";
@@ -96,6 +97,7 @@ async function ProductDetail({ params }: { params: PageProps<"/producto/[slug]">
 
   return (
     <>
+      <TrackProductView slug={p.slug} name={p.name} category={cat} />
       <Breadcrumb className="mb-5" items={[{ label: "Inicio", href: "/" }, { label: "Catálogo", href: "/catalogo" }, { label: p.name }]} />
       <div className="grid grid-cols-2 items-start gap-11 tab:grid-cols-1">
         <Carousel key={p.id} images={p.images} alt={p.name} catLabel={cat} />
@@ -161,6 +163,7 @@ async function ProductDetail({ params }: { params: PageProps<"/producto/[slug]">
           <div className="sticky bottom-0 -mx-2 flex flex-col gap-2.5 rounded-t-[18px] bg-[rgba(250,245,239,.94)] px-2 pb-4 pt-2.5 backdrop-blur-[6px]">
             <a
               href={waLink(WA_MSG.product(p.name))}
+              data-producto={p.name}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-full items-center justify-center gap-2.5 rounded-[15px] bg-wa p-[17px] text-base font-extrabold text-white shadow-[0_12px_26px_-10px_rgba(37,211,102,.6)] transition-colors hover:bg-wa-dark"

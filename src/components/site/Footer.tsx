@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE } from "@/lib/config";
+import { landingHref, landingsOf } from "@/lib/landing";
 import { LogoLight } from "@/components/site/Logo";
 import { WA_MSG, waLink } from "@/lib/whatsapp";
 
@@ -40,10 +41,19 @@ export function Footer() {
         <div>
           <div className={heading}>Servicios</div>
           <ul className="flex flex-col gap-[11px] text-sm text-footer-muted">
-            <li><Link href="/catalogo?categoria=globos" className="hover:text-white">Decoración con globos</Link></li>
-            <li><Link href="/catalogo?categoria=sorpresas" className="hover:text-white">Sorpresas personalizadas</Link></li>
-            <li><Link href="/catalogo?categoria=cake-toppers" className="hover:text-white">Cake toppers</Link></li>
-            <li><Link href="/catalogo?categoria=personalizables" className="hover:text-white">Personalizables y juegos</Link></li>
+            {landingsOf("servicios").map((l) => (
+              <li key={l.slug}>
+                <Link href={landingHref(l)} className="hover:text-white">{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+          <div className={`${heading} mt-7`}>Eventos</div>
+          <ul className="flex flex-col gap-[11px] text-sm text-footer-muted">
+            {landingsOf("eventos").map((l) => (
+              <li key={l.slug}>
+                <Link href={landingHref(l)} className="hover:text-white">{l.label}</Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div>
@@ -60,7 +70,10 @@ export function Footer() {
       </div>
       <div className="border-t border-white/8">
         <div className="pm-container flex max-w-[1240px] flex-wrap justify-between gap-2 py-[18px] text-xs text-footer-faint">
-          <span>© 2026 Petite Moments GT</span>
+          <span>
+            © 2026 Petite Moments GT ·{" "}
+            <Link href="/privacidad" className="hover:text-footer-text">Privacidad</Link>
+          </span>
           <span>Decoración y detalles para eventos en Guatemala</span>
         </div>
       </div>

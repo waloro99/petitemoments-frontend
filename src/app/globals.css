@@ -9,7 +9,7 @@
   --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
   --font-sans: var(--font-mulish), "Mulish", system-ui, sans-serif;
   /* Títulos grandes */
-  --font-title: var(--font-spinwerad), var(--font-cormorant), Georgia, serif;
+  --font-title: var(--font-title-face), var(--font-cormorant), Georgia, serif;
 
   /* Superficies */
   --color-ivory: #faf5ef;
@@ -208,14 +208,14 @@
     text-transform: uppercase;
     color: var(--color-champagne);
   }
-  /* spinwerad trae espacios entre palabras muy anchos */
+  /* Foglihten: solo ligaduras; sus formas contextuales/finales unen todas las letras y la vuelven ilegible */
   .font-title {
-    word-spacing: -0.12em;
+    font-feature-settings: "liga" 1, "calt" 0, "init" 0, "fina" 0;
   }
   .pm-h2 {
     font-family: var(--font-title);
-    word-spacing: -0.12em;
-    font-weight: 600;
+    font-feature-settings: "liga" 1, "calt" 0, "init" 0, "fina" 0;
+    font-weight: 500;
     font-size: 38px;
     margin: 0;
     color: var(--color-ink);

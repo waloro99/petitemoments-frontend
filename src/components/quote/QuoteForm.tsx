@@ -4,6 +4,7 @@ import { Suspense, use, useRef, useState, useTransition } from "react";
 import { submitLead } from "@/app/actions";
 import { CheckIcon, WhatsAppIcon } from "@/components/icons";
 import { chipClass } from "@/components/ui";
+import { track } from "@/lib/analytics";
 import { QUOTE_OPTIONS, SITE } from "@/lib/config";
 import { buildQuoteMessage, mailtoLink, type QuoteFormData, WA_MSG, waLink } from "@/lib/whatsapp";
 
@@ -48,6 +49,7 @@ export function QuoteForm({ productPromise }: { productPromise: Promise<string |
         setError(res.error);
         return;
       }
+      track.lead({ tipo: f.tipo, servicio: f.servicio, presupuesto: f.presupuesto, producto });
       setSent({ ...f, producto });
       window.scrollTo({ top: 0, behavior: "smooth" });
     });

@@ -117,6 +117,21 @@ Si no configuras Resend, las cotizaciones igual se guardan y se ven en el panel 
 
 > **Ojo:** el plan Hobby de Vercel es solo para uso personal no comercial. Para un negocio corresponde Vercel Pro o mover el hosting a Cloudflare.
 
+## 6. Analítica y SEO
+
+- **Google Analytics 4** (`NEXT_PUBLIC_GA_ID`) y **Meta Pixel** (`NEXT_PUBLIC_META_PIXEL_ID`) se activan solo si existen las variables. Tras agregarlas en Vercel hay que **redesplegar**.
+- Eventos medidos (no se mide `/admin`):
+  | Acción | GA4 | Meta |
+  |---|---|---|
+  | Página vista | `page_view` | `PageView` |
+  | Clic en WhatsApp | `contacto_whatsapp` | `Contact` |
+  | Clic en correo | `contacto_correo` | `Contact` |
+  | Cotización enviada | `generate_lead` | `Lead` |
+  | Ver producto | `view_item` | `ViewContent` |
+- Marca `generate_lead` y `contacto_whatsapp` como **eventos clave** en GA4 (Administrar → Eventos).
+- Páginas para Google: `/servicios/*` y `/eventos/*` (texto en `src/lib/landing.ts`), cada una con su título, preguntas frecuentes y datos estructurados; muestran solas los productos y fotos que se suban en el panel.
+- `sitemap.xml` y `robots.txt` se generan solos. Diagnóstico: `/api/health`.
+
 ## Cómo se actualiza el contenido
 
 Las páginas públicas se sirven estáticas y cacheadas (tag `catalog`, vida de 1 h). Cada cambio desde el panel (y cada reseña publicada) invalida ese tag con `updateTag`, así que el sitio se actualiza de inmediato.
