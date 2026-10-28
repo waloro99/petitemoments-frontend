@@ -21,6 +21,6 @@ export async function GET(request: Request) {
 
   out.imagenes = await checkStorage();
   // ?escritura=1 hace una prueba real de subida/borrado en R2
-  if (new URL(request.url).searchParams.get("escritura") === "1") out.pruebaEscritura = await checkStorageWrite();
+  if (new URL(request.url).searchParams.get("escritura") === "1") out.pruebaEscritura = await checkStorageWrite(new URL(request.url).origin);
   return Response.json(out, { headers: { "Cache-Control": "no-store" } });
 }

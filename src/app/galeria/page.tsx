@@ -76,7 +76,9 @@ async function GalleryResults({ searchParams }: { searchParams: PageProps<"/gale
       {items.length ? (
         <GalleryGrid key={active ?? "todas"} items={items} />
       ) : (
-        <p className="py-16 text-center text-ink-4">Aún no hay fotos en esta ocasión.</p>
+        <p className="py-16 text-center text-ink-4">
+          {catalog.gallery.length === 0 ? "Muy pronto compartiremos aquí fotos de nuestros montajes." : "Aún no hay fotos en esta ocasión."}
+        </p>
       )}
     </>
   );

@@ -92,12 +92,22 @@ export async function checkStorage(): Promise<Record<string, unknown>> {
 }
 
 /** Prueba real de escritura: sube y borra un archivo diminuto en R2. */
-export async function checkStorageWrite(): Promise<string> {
+export async function checkStorageWrite(siteOrigin?: string): Promise<string> {
   if (!isR2Configured) return "R2 no configurado";
   const key = `__health-check-${Date.now()}.txt`;
   const put = await r2Put(key, new TextEncoder().encode("ok").buffer as ArrayBuffer, "text/plain");
   if (!put.ok) return `error al subir ${put.status}: ${(await put.text()).replace(/\s+/g, " ").slice(0, 200)}`;
   const pub = await fetch(`${R2.publicUrl}/${key}`, { cache: "no-store" });
+  let optim = "";
+  if (siteOrigin) {
+    // Sube además una imagen mínima y la pide por el optimizador de Next (/_next/image)
+    const png = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="), (c) => c.charCodeAt(0));
+    const imgKey = `__health-check-${Date.now()}.png`;
+    await r2Put(imgKey, png.buffer as ArrayBuffer, "image/png");
+    const img = await fetch(`${siteOrigin}/_next/image?url=${encodeURIComponent(`${R2.publicUrl}/${imgKey}`)}&w=64&q=75`, { cache: "no-store" });
+    optim = ` · optimizador de imágenes ${img.ok ? "ok" : img.status}`;
+    await r2().fetch(r2Endpoint(imgKey), { method: "DELETE" });
+  }
   const del = await r2().fetch(r2Endpoint(key), { method: "DELETE" });
-  return `subida ok · lectura pública ${pub.ok ? "ok" : pub.status} · borrado ${del.ok ? "ok" : del.status}`;
+  return `subida ok · lectura pública ${pub.ok ? "ok" : pub.status} · borrado ${del.ok ? "ok" : del.status}${optim}`;
 }

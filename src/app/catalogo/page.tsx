@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Breadcrumb, chipClass, PageIntro } from "@/components/ui";
 import { BUDGETS, OCCASIONS, STYLES } from "@/lib/config";
 import { categoryLabel, getPublicCatalog } from "@/lib/data";
+import { WA_MSG, waLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Catálogo de decoración, cake toppers y sorpresas",
@@ -127,10 +128,26 @@ async function CatalogResults({ searchParams }: { searchParams: PageProps<"/cata
           </div>
         ) : (
           <div className="px-5 py-[60px] text-center text-ink-4">
-            <p className="mb-3.5 text-base">No encontramos productos con esos filtros.</p>
-            <Link href="/catalogo" className="inline-block rounded-full bg-blush px-[22px] py-3 font-bold text-white hover:bg-blush-dark">
-              Limpiar filtros
-            </Link>
+            {catalog.products.length === 0 ? (
+              <>
+                <p className="mb-3.5 text-base">Estamos preparando nuestro catálogo. Mientras tanto, cuéntanos qué necesitas.</p>
+                <a
+                  href={waLink(WA_MSG.general)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block rounded-full bg-wa px-[22px] py-3 font-bold text-white hover:bg-wa-dark"
+                >
+                  Cotizar por WhatsApp
+                </a>
+              </>
+            ) : (
+              <>
+                <p className="mb-3.5 text-base">No encontramos productos con esos filtros.</p>
+                <Link href="/catalogo" className="inline-block rounded-full bg-blush px-[22px] py-3 font-bold text-white hover:bg-blush-dark">
+                  Limpiar filtros
+                </Link>
+              </>
+            )}
           </div>
         )}
       </section>
