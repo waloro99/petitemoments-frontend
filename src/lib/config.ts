@@ -27,7 +27,7 @@ export const SITE = {
   whatsapp: "50242278353",
   whatsappDisplay: "+502 4227-8353",
   // Placeholder: confirmar el correo real con la clienta.
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "hola@petitemomentsgt.com",
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ventas@petitemomentsgt.com",
   instagram: "petitemomentsgt",
   city: "Ciudad de Guatemala",
   region: "Guatemala",

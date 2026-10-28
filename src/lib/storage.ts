@@ -20,17 +20,32 @@ export const isR2Configured = Boolean(R2.accountId && R2.accessKeyId && R2.secre
 
 let client: AwsClient | null = null;
 const r2 = () => (client ??= new AwsClient({ accessKeyId: R2.accessKeyId, secretAccessKey: R2.secretAccessKey, service: "s3", region: "auto" }));
-const r2Endpoint = (key: string) =>
-  `https://${R2.accountId}.r2.cloudflarestorage.com/${R2.bucket}/${key.split("/").map(encodeURIComponent).join("/")}`;
+// R2_ENDPOINT solo para pruebas locales; en producción se usa el endpoint de la cuenta.
+const r2Base = () => (process.env.R2_ENDPOINT || `https://${R2.accountId}.r2.cloudflarestorage.com`).replace(/\/+$/, "");
+const r2Endpoint = (key: string) => `${r2Base()}/${R2.bucket}/${key.split("/").map(encodeURIComponent).join("/")}`;
+
+/**
+ * PUT firmado con el cuerpo como bytes y longitud explícita.
+ * (Pasarle un Request a fetch hace que Next.js lo envíe como stream sin Content-Length,
+ * y R2 lo rechaza con 411 MissingContentLength.)
+ */
+async function r2Put(key: string, bytes: ArrayBuffer, contentType: string) {
+  const signed = await r2().sign(r2Endpoint(key), {
+    method: "PUT",
+    body: bytes,
+    headers: {
+      "Content-Type": contentType,
+      "Content-Length": String(bytes.byteLength),
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
+  return fetch(signed.url, { method: "PUT", headers: signed.headers, body: bytes, cache: "no-store" });
+}
 
 /** Sube un archivo y devuelve su URL pública. */
 export async function putImage(db: SupabaseClient, key: string, file: Blob, contentType: string): Promise<string> {
   if (isR2Configured) {
-    const res = await r2().fetch(r2Endpoint(key), {
-      method: "PUT",
-      body: await file.arrayBuffer(),
-      headers: { "Content-Type": contentType, "Cache-Control": "public, max-age=31536000, immutable" },
-    });
+    const res = await r2Put(key, await file.arrayBuffer(), contentType);
     if (!res.ok) throw new Error(`R2 respondió ${res.status}: ${(await res.text()).slice(0, 200)}`);
     return `${R2.publicUrl}/${key}`;
   }
@@ -61,7 +76,7 @@ export async function checkStorage(): Promise<Record<string, unknown>> {
   if (!isR2Configured) return { proveedor: "supabase", nota: "R2 no configurado o incompleto" };
   const out: Record<string, unknown> = { proveedor: "r2", dominioPublico: R2.publicUrl };
   try {
-    const res = await r2().fetch(`https://${R2.accountId}.r2.cloudflarestorage.com/${R2.bucket}?list-type=2&max-keys=1`);
+    const res = await r2().fetch(`${r2Base()}/${R2.bucket}?list-type=2&max-keys=1`);
     out.credenciales = res.ok ? "ok" : `error ${res.status}: ${(await res.text()).replace(/\s+/g, " ").slice(0, 160)}`;
   } catch (e) {
     out.credenciales = `error: ${e instanceof Error ? e.message : String(e)}`;
@@ -74,4 +89,15 @@ export async function checkStorage(): Promise<Record<string, unknown>> {
     out.dominio = `no responde: ${e instanceof Error ? e.message : String(e)}`;
   }
   return out;
+}
+
+/** Prueba real de escritura: sube y borra un archivo diminuto en R2. */
+export async function checkStorageWrite(): Promise<string> {
+  if (!isR2Configured) return "R2 no configurado";
+  const key = `__health-check-${Date.now()}.txt`;
+  const put = await r2Put(key, new TextEncoder().encode("ok").buffer as ArrayBuffer, "text/plain");
+  if (!put.ok) return `error al subir ${put.status}: ${(await put.text()).replace(/\s+/g, " ").slice(0, 200)}`;
+  const pub = await fetch(`${R2.publicUrl}/${key}`, { cache: "no-store" });
+  const del = await r2().fetch(r2Endpoint(key), { method: "DELETE" });
+  return `subida ok · lectura pública ${pub.ok ? "ok" : pub.status} · borrado ${del.ok ? "ok" : del.status}`;
 }
